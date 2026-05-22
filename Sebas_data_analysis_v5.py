@@ -380,7 +380,13 @@ def dict_symmetrizer(neighs_dict, labels, label_to_id):
 # zdczd
 # # testing
 
-cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "5_knn_neighbors", "touching_neighbors", "cell_id"]
+knn = int(np.loadtxt('knn.txt', delimiter=','))
+
+if knn==5:
+    cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "5_knn_neighbors", "touching_neighbors", "cell_id"]
+elif knn==7:
+    cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "7_knn_neighbors", "touching_neighbors", "cell_id"]
+    
 # all_data = pd.read_excel('mixed_full_data_test.xlsx', sheet_name='mixed', usecols=cols_to_read)
 all_data = pd.read_excel('mixed_full_data.xlsx', sheet_name='mixed', usecols=cols_to_read)
 
@@ -391,13 +397,24 @@ time_points.sort()
 n_orgs = len(organoids_names)
 n_time_points = len(time_points)
 
-lw_list = [1,2,3,4,5,6,7, 20]
-lc_list = [1,2,3,4,5,6,7, 20]
+lw_list = [1,2,3,4,5,6,7, 8, 9, 10, 11, 15, 20, 40]
+# lc_list = [1,2,3,4,5,6,7, 20]
+# lc_list = [1,2,3,4,5,6,7, 8, 9, 10, 11, 15, 20, 40]
+lc_list = [1,2,3,4,5,6,7, 8, 9, 10, 11, 15, 20, 40]
 for l_w in lw_list:
     for l_c in lc_list:
 
-# l_w = 2
-# l_c = 1
+        # l_w = 2
+        # l_c = 1
+        
+        data_folder = 'lw_'+str(int(l_w))+'__lc_'+str(int(l_c))
+        if os.path.isdir(data_folder):
+            continue
+        
+        try:
+            os.mkdir(data_folder)
+        except FileExistsError:
+            pass
 
         conc_switch = 0
         
@@ -411,6 +428,10 @@ for l_w in lw_list:
         c_v_mat = np.zeros((n_orgs, n_time_points), dtype=int)
         w_b_mat = np.zeros((n_orgs, n_time_points), dtype=int) # border
         c_b_mat = np.zeros((n_orgs, n_time_points), dtype=int)
+        
+        avg_num_w_visib_to_aff_c_mat = np.zeros((n_orgs, n_time_points), dtype=float) # individual neighberhoods
+        avg_num_c_visib_to_aff_w_mat = np.zeros((n_orgs, n_time_points), dtype=float)
+        
         
         for org_c in range(n_orgs):
             org_name = organoids_names[org_c]
@@ -453,7 +474,12 @@ for l_w in lw_list:
                     sgfdsgfdg
                 
                 touch_list_list = subset_df["touching_neighbors"].to_list()
-                knn_list_list   = subset_df["5_knn_neighbors"].to_list()
+                
+                if knn==5:
+                    knn_list_list   = subset_df["5_knn_neighbors"].to_list()
+                elif knn==7:
+                    knn_list_list   = subset_df["7_knn_neighbors"].to_list()
+                    
                 neighs_dict = dict()
                 label_to_id = dict()
                 for cell_c in range(n_cells):
@@ -511,6 +537,8 @@ for l_w in lw_list:
                     is_visible_w    = 1*(np.min(lc_related_data, axis=1) * (1-phenos)).astype(bool)
                     n_c_affected = np.sum(is_affected_c)
                     n_w_visible  = np.sum(is_visible_w)
+                    num_w_neigh_to_c = np.sum(1*(lc_related_data.astype(bool)), axis=1) * (phenos)
+                    avg_num_w_visib_to_aff_c =  num_w_neigh_to_c[num_w_neigh_to_c != 0].mean()
                     # l_c-related
                     
                     # l_w-related
@@ -521,6 +549,8 @@ for l_w in lw_list:
                     is_visible_c    = 1*(np.min(lw_related_data, axis=1) * phenos    ).astype(bool)
                     n_w_affected = np.sum(is_affected_w)
                     n_c_visible  = np.sum(is_visible_c)
+                    num_c_neigh_to_w = np.sum(1*(lw_related_data.astype(bool)), axis=1) * (1-phenos)
+                    avg_num_c_visib_to_aff_w =  num_c_neigh_to_w[num_c_neigh_to_w != 0].mean()
                     # l_w-related
                     
                     
@@ -532,6 +562,9 @@ for l_w in lw_list:
                     c_v_mat[org_c, t_c] = n_c_visible
                     w_b_mat[org_c, t_c] = n_w_border
                     c_b_mat[org_c, t_c] = n_c_border
+                    
+                    avg_num_w_visib_to_aff_c_mat[org_c, t_c] = avg_num_w_visib_to_aff_c
+                    avg_num_c_visib_to_aff_w_mat[org_c, t_c] = avg_num_c_visib_to_aff_w
                     
                     
                     
@@ -549,11 +582,8 @@ for l_w in lw_list:
                 # knn_list_list.clear()
                 # neighs_dict.clear()
         
-        data_folder = 'lw_'+str(int(l_w))+'__lc_'+str(int(l_c))
-        try:
-            os.mkdir(data_folder)
-        except FileExistsError:
-            pass
+        
+        
         with open(data_folder+"/org_names.txt", "w") as org_names_file:
             for org_name in organoids_names:
                 org_names_file.write(org_name + "\n")
@@ -567,6 +597,9 @@ for l_w in lw_list:
         np.savetxt(data_folder+"/c_v_mat.txt", X=c_v_mat, fmt='%d', delimiter=',')
         np.savetxt(data_folder+"/w_b_mat.txt", X=w_b_mat, fmt='%d', delimiter=',')
         np.savetxt(data_folder+"/c_b_mat.txt", X=c_b_mat, fmt='%d', delimiter=',')
+        
+        np.savetxt(data_folder+"/avg_num_w_visib_to_aff_c_mat.txt", X=avg_num_w_visib_to_aff_c_mat, fmt='%.3e', delimiter=',')
+        np.savetxt(data_folder+"/avg_num_c_visib_to_aff_w_mat.txt", X=avg_num_c_visib_to_aff_w_mat, fmt='%.3e', delimiter=',')
 
 
 
