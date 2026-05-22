@@ -112,7 +112,8 @@ for l_w in lw_list:
             for org_name in sorted_org_names:
                 org_names_file_sorted.write(org_name + "\n")
                 
-        
+        os.chdir(mother_folder)
+
         
         
         
