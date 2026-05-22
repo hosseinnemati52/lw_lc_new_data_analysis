@@ -280,7 +280,8 @@ for l_w in lw_list:
         outlier_names_list = ['E-139_S-18_O-1']
         outlier_list = []
         for outlier_name in outlier_names_list:
-            outlier_list.append(  org_names.index(outlier_name)  )
+            if outlier_name in org_names:
+                outlier_list.append(  org_names.index(outlier_name)  )
         w_mat = np.delete(w_mat, outlier_list, axis=0)
         w_b_mat = np.delete(w_b_mat, outlier_list, axis=0)
         w_a_mat = np.delete(w_a_mat, outlier_list, axis=0)
