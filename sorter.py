@@ -29,28 +29,28 @@ v_c_avg_c = 919  # um^3
 shell_thickness = 10 #um
 
     
-sorted_names = ["a", "b", "c", "d"]
-unsorted_names = ["c", "a", "d", "b"]
+# sorted_names = ["a", "b", "c", "d"]
+# unsorted_names = ["c", "a", "d", "b"]
 
-connected_list = [30, 10, 40, 20]
-matrix = np.array([
-    [3, 3],
-    [1, 1],
-    [4, 4],
-    [2, 2],
-])
+# connected_list = [30, 10, 40, 20]
+# matrix = np.array([
+#     [3, 3],
+#     [1, 1],
+#     [4, 4],
+#     [2, 2],
+# ])
 
-# order[i] gives the index in unsorted_names of sorted_names[i]
-index = {name: i for i, name in enumerate(unsorted_names)}
-order = [index[name] for name in sorted_names]
+# # order[i] gives the index in unsorted_names of sorted_names[i]
+# index = {name: i for i, name in enumerate(unsorted_names)}
+# order = [index[name] for name in sorted_names]
 
-new_names = [unsorted_names[i] for i in order]
-new_connected_list = [connected_list[i] for i in order]
-new_matrix = matrix[order, :]
+# new_names = [unsorted_names[i] for i in order]
+# new_connected_list = [connected_list[i] for i in order]
+# new_matrix = matrix[order, :]
 
-print(new_names)
-print(new_connected_list)
-print(new_matrix)
+# print(new_names)
+# print(new_connected_list)
+# print(new_matrix)
 
 for l_w in lw_list:
     for l_c in lc_list:
