@@ -21,7 +21,8 @@ def time_plotter_func(x, y_mat, ylabel, file_name, color, switch_all_plot):
         switch_norm=0
         
     plt.figure()
-    if switch_all_plot:
+    # if switch_all_plot:
+    if 1:
         for i in range(n_orgs):
             plt.plot(x, y_mat[i,:], color=color)
     plt.xlabel('time (h)', fontsize=15)
@@ -50,7 +51,7 @@ def time_plotter_func(x, y_mat, ylabel, file_name, color, switch_all_plot):
 
     
     plt.tight_layout()
-    plt.savefig(file_name+".png", dpi=300)
+    plt.savefig(file_name+".png", dpi=150)
     plt.close()
     
     return 0
@@ -70,7 +71,7 @@ def scatter_plotter(x, y, xlabel, ylabel, file_name, color):
     title = 'corr: '+str( round(r, 3) )+', p_val: '+str(round(p, 5))
     plt.title(title)
     plt.tight_layout()
-    plt.savefig(file_name+".png", dpi=300)
+    plt.savefig(file_name+".png", dpi=150)
     plt.close()
     
     
@@ -269,6 +270,7 @@ for l_w in lw_list:
         # fw_beta_a_w = np.loadtxt("fw_beta_a_w.txt", delimiter=',')
         # fc_beta_a_c = np.loadtxt("fc_beta_a_c.txt", delimiter=',')
         
+        
         fw_beta_a_w_integ = np.loadtxt("fw_beta_a_w_integ.txt", delimiter=',')
         fc_beta_a_c_integ = np.loadtxt("fc_beta_a_c_integ.txt", delimiter=',')
         
@@ -276,36 +278,35 @@ for l_w in lw_list:
         Ca_beta_a_c_integ = np.loadtxt("Ca_beta_a_c_integ.txt", delimiter=',')
         # reading data
         
-        # eliminating outliers
-        outlier_names_list = ['E-139_S-18_O-1']
-        outlier_list = []
-        for outlier_name in outlier_names_list:
-            if outlier_name in org_names:
-                outlier_list.append(  org_names.index(outlier_name)  )
-        w_mat = np.delete(w_mat, outlier_list, axis=0)
-        w_b_mat = np.delete(w_b_mat, outlier_list, axis=0)
-        w_a_mat = np.delete(w_a_mat, outlier_list, axis=0)
-        w_v_mat = np.delete(w_v_mat, outlier_list, axis=0)
-        w_u_mat = np.delete(w_u_mat, outlier_list, axis=0)
+        # # eliminating outliers
+        # outlier_names_list = ['E-139_S-18_O-1']
+        # outlier_list = []
+        # for outlier_name in outlier_names_list:
+        #     if outlier_name in org_names:
+        #         outlier_list.append(  org_names.index(outlier_name)  )
+        # w_mat = np.delete(w_mat, outlier_list, axis=0)
+        # w_b_mat = np.delete(w_b_mat, outlier_list, axis=0)
+        # w_a_mat = np.delete(w_a_mat, outlier_list, axis=0)
+        # w_v_mat = np.delete(w_v_mat, outlier_list, axis=0)
+        # w_u_mat = np.delete(w_u_mat, outlier_list, axis=0)
         
-        c_mat = np.delete(c_mat, outlier_list, axis=0)
-        c_b_mat = np.delete(c_b_mat, outlier_list, axis=0)
-        c_a_mat = np.delete(c_a_mat, outlier_list, axis=0)
-        c_v_mat = np.delete(c_v_mat, outlier_list, axis=0)
-        c_u_mat = np.delete(c_u_mat, outlier_list, axis=0)
+        # c_mat = np.delete(c_mat, outlier_list, axis=0)
+        # c_b_mat = np.delete(c_b_mat, outlier_list, axis=0)
+        # c_a_mat = np.delete(c_a_mat, outlier_list, axis=0)
+        # c_v_mat = np.delete(c_v_mat, outlier_list, axis=0)
+        # c_u_mat = np.delete(c_u_mat, outlier_list, axis=0)
         
-        avg_num_c_visib_to_aff_w_mat = np.delete(avg_num_c_visib_to_aff_w_mat, outlier_list, axis=0)
-        avg_num_w_visib_to_aff_c_mat = np.delete(avg_num_w_visib_to_aff_c_mat, outlier_list, axis=0)
+        # avg_num_c_visib_to_aff_w_mat = np.delete(avg_num_c_visib_to_aff_w_mat, outlier_list, axis=0)
+        # avg_num_w_visib_to_aff_c_mat = np.delete(avg_num_w_visib_to_aff_c_mat, outlier_list, axis=0)
         
-        vol_lum = np.delete(vol_lum, outlier_list, axis=0)
+        # vol_lum = np.delete(vol_lum, outlier_list, axis=0)
         
-        fw_beta_a_w_integ = np.delete(fw_beta_a_w_integ, outlier_list, axis=0)
-        fc_beta_a_c_integ = np.delete(fc_beta_a_c_integ, outlier_list, axis=0)
+        # fw_beta_a_w_integ = np.delete(fw_beta_a_w_integ, outlier_list, axis=0)
+        # fc_beta_a_c_integ = np.delete(fc_beta_a_c_integ, outlier_list, axis=0)
         
-        Wa_beta_a_w_integ = np.delete(Wa_beta_a_w_integ, outlier_list, axis=0)
-        Ca_beta_a_c_integ = np.delete(Ca_beta_a_c_integ, outlier_list, axis=0)
-        
-        # eliminating outliers
+        # Wa_beta_a_w_integ = np.delete(Wa_beta_a_w_integ, outlier_list, axis=0)
+        # Ca_beta_a_c_integ = np.delete(Ca_beta_a_c_integ, outlier_list, axis=0)
+        # # eliminating outliers
         
         fw_mat = w_a_mat/w_mat # fraction of affected
         fc_mat = c_a_mat/c_mat
@@ -415,6 +416,7 @@ for l_w in lw_list:
             # # plotting with extra data points
             
             # temporal plots
+        
         
         # rar
         # scatter plots

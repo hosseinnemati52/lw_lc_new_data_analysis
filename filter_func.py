@@ -48,6 +48,19 @@ with open("org_names_filter.txt", "r") as f:
     for line in f:
         org_names_filter.append(line.strip())
 
+org_names_outlier = []
+del org_names_outlier
+org_names_outlier = []
+with open("org_names_outlier.txt", "r") as f:
+    for line in f:
+        org_names_outlier.append(line.strip())
+
+for name in org_names_outlier:
+    if name in org_names_filter:
+        org_names_filter.remove(name)
+        
+
+        
 for l_w in lw_list:
     for l_c in lc_list:
         

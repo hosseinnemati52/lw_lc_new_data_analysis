@@ -116,7 +116,8 @@ for l_w_idx in range(len(lw_list)):
     # eliminating outliers
     outlier_list = []
     for outlier_name in outlier_names_list:
-        outlier_list.append(  org_names.index(outlier_name)  )
+        if outlier_name in org_names:
+            outlier_list.append(  org_names.index(outlier_name)  )
     fw_beta_a_w_integ = np.delete(fw_beta_a_w_integ, outlier_list, axis=0)
     Wa_beta_a_w_integ = np.delete(Wa_beta_a_w_integ, outlier_list, axis=0)
     w_a_mat = np.delete(w_a_mat, outlier_list, axis=0)
@@ -156,6 +157,7 @@ for l_w_idx in range(len(lw_list)):
     err = fw_err_all_lw[l_w_idx,:]
     weights = 1/err
     weights[0] = 1/(1e-4)
+    weights[err==0] = 1/(1e-4)
     coeffs = np.polyfit(x, avg, deg=1, w=weights)
     poly = np.poly1d(coeffs)
     
@@ -266,7 +268,7 @@ for l_w_idx in range(len(lw_list)):
     l_w = lw_list[l_w_idx]
     
     plt.plot(fit_plot_x, beta_w_a_avg_by_f[l_w_idx,:], label='lw='+str(int(l_w))+', f', linestyle='--', color=colors[l_w_idx])
-    # plt.plot(fit_plot_x, beta_w_a_avg_by_N[l_w_idx,:], label='lw='+str(int(l_w))+', N', color=colors[l_w_idx])
+    plt.plot(fit_plot_x, beta_w_a_avg_by_N[l_w_idx,:], label='lw='+str(int(l_w))+', N', color=colors[l_w_idx])
 
 plt.plot(fit_plot_x, 0*fit_plot_x+beta_w_0, label=r'$\beta^0_W$')
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=15)
@@ -312,7 +314,8 @@ for l_c_idx in range(len(lc_list)):
     # eliminating outliers
     outlier_list = []
     for outlier_name in outlier_names_list:
-        outlier_list.append(  org_names.index(outlier_name)  )
+        if outlier_name in org_names:
+            outlier_list.append(  org_names.index(outlier_name)  )
     fc_beta_a_c_integ = np.delete(fc_beta_a_c_integ, outlier_list, axis=0)
     Ca_beta_a_c_integ = np.delete(Ca_beta_a_c_integ, outlier_list, axis=0)
     c_a_mat = np.delete(c_a_mat, outlier_list, axis=0)
@@ -353,6 +356,7 @@ for l_c_idx in range(len(lc_list)):
     err = fc_err_all_lc[l_c_idx,:]
     weights = 1/err
     weights[0] = 1/(1e-4)
+    weights[err==0] = 1/(1e-4)
     coeffs = np.polyfit(x, avg, deg=3, w=weights)
     poly = np.poly1d(coeffs)
     
