@@ -385,10 +385,11 @@ knn = int(np.loadtxt('knn.txt', delimiter=','))
 if knn==5:
     cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "5_knn_neighbors", "touching_neighbors", "cell_id"]
 elif knn==7:
-    cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "7_knn_neighbors", "touching_neighbors", "cell_id"]
+    # cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "7_knn_neighbors", "touching_neighbors", "cell_id"]
+    cols_to_read = ["sample_name", "label", "time", "phenotype_crc_vs_wt", "7_knn_neighbors", "touching_neighbors"]
     
 # all_data = pd.read_excel('mixed_full_data_test.xlsx', sheet_name='mixed', usecols=cols_to_read)
-all_data = pd.read_excel('mixed_full_data.xlsx', sheet_name='mixed', usecols=cols_to_read)
+all_data = pd.read_excel('mixed_70.xlsx', sheet_name='mixed', usecols=cols_to_read)
 
 organoids_names = list(set(list(all_data['sample_name'])))
 time_points     = list(set(list(all_data['time'])))
@@ -420,17 +421,18 @@ for l_w in lw_list:
         
         shortest_distance_matrices = defaultdict(dict)
         
-        w_mat = np.zeros((n_orgs, n_time_points), dtype=int) # population of wt, in each org, at each time; each row in an org;
-        c_mat = np.zeros((n_orgs, n_time_points), dtype=int)
-        w_a_mat = np.zeros((n_orgs, n_time_points), dtype=int) # affected
-        c_a_mat = np.zeros((n_orgs, n_time_points), dtype=int)
-        w_v_mat = np.zeros((n_orgs, n_time_points), dtype=int) # visible
-        c_v_mat = np.zeros((n_orgs, n_time_points), dtype=int)
-        w_b_mat = np.zeros((n_orgs, n_time_points), dtype=int) # border
-        c_b_mat = np.zeros((n_orgs, n_time_points), dtype=int)
+        # np.full((n_orgs, n_time_points), np.nan)
+        w_mat = np.full((n_orgs, n_time_points), np.nan) # population of wt, in each org, at each time; each row in an org;
+        c_mat = np.full((n_orgs, n_time_points), np.nan)
+        w_a_mat = np.full((n_orgs, n_time_points), np.nan) # affected
+        c_a_mat = np.full((n_orgs, n_time_points), np.nan)
+        w_v_mat = np.full((n_orgs, n_time_points), np.nan) # visible
+        c_v_mat = np.full((n_orgs, n_time_points), np.nan)
+        w_b_mat = np.full((n_orgs, n_time_points), np.nan) # border
+        c_b_mat = np.full((n_orgs, n_time_points), np.nan)
         
-        avg_num_w_visib_to_aff_c_mat = np.zeros((n_orgs, n_time_points), dtype=float) # individual neighberhoods
-        avg_num_c_visib_to_aff_w_mat = np.zeros((n_orgs, n_time_points), dtype=float)
+        avg_num_w_visib_to_aff_c_mat = np.full((n_orgs, n_time_points), np.nan) # individual neighberhoods
+        avg_num_c_visib_to_aff_w_mat = np.full((n_orgs, n_time_points), np.nan)
         
         
         for org_c in range(n_orgs):
@@ -442,12 +444,17 @@ for l_w in lw_list:
                 
                 subset_df = all_data[(all_data["sample_name"] == org_name) & (all_data["time"] == time_val)]
                 
-                ids =    np.array(list(subset_df['cell_id']))
+                if subset_df.empty: # some organoids do not have 70 h or 65 h data
+                    continue
+                
+                # ids =    np.array(list(subset_df['cell_id']))
                 labels = np.array(list(subset_df['label']))
                 phenos_str = list(subset_df['phenotype_crc_vs_wt']) # 0 for wt, 1 for cancer
                 phenos = np.array([0 if x == 'wt' else 1 for x in phenos_str])
                 
-                n_cells = len(ids)
+                # n_cells = len(ids)
+                n_cells = len(labels)
+                
                 
                 # pheno_diff_mat = np.zeros((n_cells, n_cells), dtype=int)
                 # for ii in range(n_cells):
@@ -464,14 +471,14 @@ for l_w in lw_list:
                 n_c = np.sum(phenos)
                 n_w = n_cells - n_c
                 
-                is_sorted = (ids == sorted(ids))
-                if np.any(is_sorted == False):
-                    print("#################")
-                    print("ids is not in sort")
-                    print(org_name)
-                    print(time_val)
-                    print("#################")
-                    sgfdsgfdg
+                # is_sorted = (ids == sorted(ids))
+                # if np.any(is_sorted == False):
+                #     print("#################")
+                #     print("ids is not in sort")
+                #     print(org_name)
+                #     print(time_val)
+                #     print("#################")
+                #     sgfdsgfdg
                 
                 touch_list_list = subset_df["touching_neighbors"].to_list()
                 
@@ -589,14 +596,14 @@ for l_w in lw_list:
                 org_names_file.write(org_name + "\n")
         np.savetxt(data_folder+"/time_points.txt", X=time_points, fmt='%.1f', delimiter=',')
         np.savetxt(data_folder+"/lw_lc.txt", X=np.array([l_w, l_c]), fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/w_mat.txt", X=w_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/c_mat.txt", X=c_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/w_a_mat.txt", X=w_a_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/c_a_mat.txt", X=c_a_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/w_v_mat.txt", X=w_v_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/c_v_mat.txt", X=c_v_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/w_b_mat.txt", X=w_b_mat, fmt='%d', delimiter=',')
-        np.savetxt(data_folder+"/c_b_mat.txt", X=c_b_mat, fmt='%d', delimiter=',')
+        np.savetxt(data_folder+"/w_mat.txt", X=w_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/c_mat.txt", X=c_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/w_a_mat.txt", X=w_a_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/c_a_mat.txt", X=c_a_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/w_v_mat.txt", X=w_v_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/c_v_mat.txt", X=c_v_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/w_b_mat.txt", X=w_b_mat, fmt='%.0f', delimiter=',')
+        np.savetxt(data_folder+"/c_b_mat.txt", X=c_b_mat, fmt='%.0f', delimiter=',')
         
         np.savetxt(data_folder+"/avg_num_w_visib_to_aff_c_mat.txt", X=avg_num_w_visib_to_aff_c_mat, fmt='%.3e', delimiter=',')
         np.savetxt(data_folder+"/avg_num_c_visib_to_aff_w_mat.txt", X=avg_num_c_visib_to_aff_w_mat, fmt='%.3e', delimiter=',')
